@@ -10,7 +10,10 @@ def home(request):
 
 def gerenciar(request):
     contas = Conta.objects.all()
-    return render(request, 'gerenciar.html', {'contas': contas})
+    total_contas = 0
+    for conta in contas:
+        total_contas += conta.valor
+    return render(request, 'gerenciar.html', {'contas': contas, 'total_contas': total_contas})
 
 def cadastrar_banco(request):
     apelido = request.POST.get('apelido')
@@ -41,3 +44,8 @@ def cadastrar_banco(request):
 
     messages.add_message(request, constants.SUCCESS, 'Conta cadastrada com sucesso')
     return redirect('/perfil/gerenciar/')
+
+def cadastrar_banco(request, id):
+    conta = Conta.objects.get(id=id)
+    print(conta)
+    return HttpResponse(conta)
