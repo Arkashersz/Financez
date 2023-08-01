@@ -77,7 +77,7 @@
             <div class="col-md-5">
                 <span class="fonte-destaque">Nova categoria</span>
 
-                <form action="" method="POST">
+                <form action="{% url 'cadastrar_categoria' %}" method="POST">{% csrf_token %}
                     <label>Categoria</label>
                     <input type="text" name="categoria" class="form-control">
                     <br>
@@ -97,13 +97,13 @@
                 <br>
                 <div class="contas">
 
-                    
+                    {% for categoria in categorias %}
                         <div class="lista-contas-main">
-                            <span>Lazer</span>
-
-                            <span class="total-conta"><a href="#"><img src="#"></a></span>
+                            <span>{{categoria}}</span>                     
+                            <span class="total-conta"><a href="#"><img src="{% if categoria.essencial %} {% static 'perfil/img/check.png' %} {% else %} {% static 'perfil/img/exit.png' %} {% endif %}"></a></span>
                         </div>
                         <br>
+                    {% endfor %}
                    
                     
                 </div>
