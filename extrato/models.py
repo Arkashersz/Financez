@@ -1,6 +1,7 @@
 from django.db import models
 from perfil.models import Categoria, Conta
 
+#.
 # Create your models here.
 class Valores(models.Model):
     choice_tipo = (
