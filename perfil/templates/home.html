@@ -60,7 +60,7 @@
                     <div class="div-contas">
                         {% for conta in contas %}
                             <div class="lista-conta">
-                                <span>Nubank</span>
+                                <span class="total-banco">{{conta.apelido}}</span>
                                 <span class="total-conta">R$ {{conta.valor}}</span>
                             </div>
                             <br>
