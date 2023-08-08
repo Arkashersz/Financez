@@ -1,0 +1,5 @@
+# Ignorar o ambiente virtual (venv)
+venv
+
+# Ignorar arquivos de banco de dados (substitua 'database.db' pelo nome real do arquivo)
+db.sqlite3
