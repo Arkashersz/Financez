@@ -62,5 +62,8 @@ def view_extrato(request):
         valores = valores.filter(categoria__id=categoria_get)
     
 
-    
+    #TODO: Criar filtro por período
     return render(request, 'view_extrato.html', {'valores': valores, 'contas': contas, 'categorias': categorias})
+
+def exportar_pdf(request):
+    
