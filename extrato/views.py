@@ -5,12 +5,14 @@ from .models import Valores
 from django.contrib import messages
 from django.contrib.messages import constants
 from datetime import datetime
+from django.template.loader import render_to_string
+import os
+from django.conf import settings
 
-# Create your views here.
 def novo_valor(request):
     if request.method == "GET":
         contas = Conta.objects.all()
-        categorias = Categoria.objects.all() 
+        categorias = Categoria.objects.all()
         return render(request, 'novo_valor.html', {'contas': contas, 'categorias': categorias})
     elif request.method == "POST":
         valor = request.POST.get('valor')
@@ -19,7 +21,7 @@ def novo_valor(request):
         data = request.POST.get('data')
         conta = request.POST.get('conta')
         tipo = request.POST.get('tipo')
-        
+
         valores = Valores(
             valor=valor,
             categoria_id=categoria,
@@ -40,14 +42,16 @@ def novo_valor(request):
 
         conta.save()
 
-        
         # TODO; Mensagem processada de acordo com o tipo (Entrada ou Saída)
         if tipo == 'E':
-            messages.add_message(request, constants.SUCCESS, 'Valor de entrada cadastrado com sucesso.')
+            messages.add_message(request, constants.SUCCESS,
+                                 'Valor de entrada cadastrado com sucesso.')
         else:
-            messages.add_message(request, constants.SUCCESS, 'Valor de saída cadastrado com sucesso.')
+            messages.add_message(request, constants.SUCCESS,
+                                 'Valor de saída cadastrado com sucesso.')
         return redirect('/extrato/novo_valor')
-    
+
+
 def view_extrato(request):
     contas = Conta.objects.all()
     categorias = Categoria.objects.all()
@@ -60,10 +64,17 @@ def view_extrato(request):
 
     if categoria_get:
         valores = valores.filter(categoria__id=categoria_get)
-    
 
-    #TODO: Criar filtro por período
+    # TODO: Criar filtro por período
     return render(request, 'view_extrato.html', {'valores': valores, 'contas': contas, 'categorias': categorias})
 
+
 def exportar_pdf(request):
+    valores = Valores.objects.filter(data__month=datetime.now().month)
+
+    path_template = os.path.join(settings.BASE_DIR, 'templates/partials/extrato.html')
+    template_render = render_to_string(path_template, {'valores': valores})
     
+
+
+    return HttpResponse(template_render)

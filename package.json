@@ -1,5 +1,6 @@
 {
   "dependencies": {
-    "pillow": "^0.0.9"
+    "pillow": "^0.0.9",
+    "weasyprint": "^0.1.7"
   }
 }
