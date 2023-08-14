@@ -14,7 +14,7 @@ function update_valor_planejamento_categoria(id) {
         return result.json()
 
     }).then(function (data) {
-        console.log(data)
+        
 
     })
 
