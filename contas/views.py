@@ -4,6 +4,7 @@ from .models import ContaPagar, ContaPaga
 from django.contrib import messages
 from django.contrib.messages import constants
 from datetime import datetime
+from datetime import datetime, timedelta
 
 def definir_contas(request):
     if request.method == "GET":
@@ -29,27 +30,35 @@ def definir_contas(request):
         messages.add_message(request, constants.SUCCESS, 'Conta cadastrada com sucesso')
         return redirect('/contas/definir_contas')
 
+def atualizar_datas_pagamento():
+    contas = ContaPagar.objects.filter(pago=False)
+    for conta in contas:
+        dias_apos_vencimento = datetime.now().day - conta.dia_pagamento
+        if dias_apos_vencimento > 0:
+            nova_data_pagamento = datetime.now() + timedelta(days=dias_apos_vencimento)
+        else:
+            nova_data_pagamento = datetime.now() - timedelta(days=abs(dias_apos_vencimento))
+        conta.dia_pagamento = nova_data_pagamento.day
+        conta.save()
+
+
 def pagar_conta(request, conta_id):
     conta = ContaPagar.objects.get(pk=conta_id)
-    conta.pago = True
-    conta.save()
-    messages.add_message(request, constants.SUCCESS, f'A conta "{conta.titulo}" foi marcada como paga')
+    if not conta.pago:
+        conta.pago = True
+        conta.save()
+        conta_paga = ContaPaga(conta=conta, data_pagamento=datetime.now())
+        conta_paga.save()
+        messages.add_message(request, constants.SUCCESS, 'Conta paga com sucesso')
     return redirect('ver_contas')
 
 def ver_contas(request):
     MES_ATUAL = datetime.now().month
-    DIA_ATUAL = datetime.now().day
     
-    contas = ContaPagar.objects.all()
-
-    contas_pagas = ContaPaga.objects.filter(data_pagamento__month=MES_ATUAL).values('conta')
-
-    contas_vencidas = contas.filter(dia_pagamento__lt=DIA_ATUAL).exclude(id__in=contas_pagas)
+    contas_vencidas = ContaPagar.objects.filter(dia_pagamento__lt=datetime.now().day, pago=False)
+    contas_proximas_vencimento = ContaPagar.objects.filter(dia_pagamento__gte=datetime.now().day, dia_pagamento__lte=datetime.now().day + 5, pago=False)
+    restantes = ContaPagar.objects.filter(dia_pagamento__gt=datetime.now().day + 5, pago=False)
     
-    contas_proximas_vencimento = contas.filter(dia_pagamento__lte = DIA_ATUAL + 5).filter(dia_pagamento__gte=DIA_ATUAL).exclude(id__in=contas_pagas)
-    
-    restantes = contas.exclude(id__in=contas_vencidas).exclude(id__in=contas_pagas).exclude(id__in=contas_proximas_vencimento)
-
     total_contas_pagas = ContaPaga.objects.filter(data_pagamento__month=MES_ATUAL).count()
 
     return render(request, 'ver_contas.html', {'contas_vencidas': contas_vencidas, 
