@@ -72,3 +72,12 @@ def update_categoria(request, id):
     categoria.essencial = not categoria.essencial
     categoria.save()
     return redirect('/perfil/gerenciar/')
+
+def dashboard(request):
+    dados = {}
+    categorias = Categoria.objects.all()
+
+    for categoria in categorias:
+        dados[categoria.categoria] = Valores.objects.filter(categoria=categoria).aggregate(Sum('valor'))['valor__sum']
+
+    return render(request, 'dashboard.html', {'labels': list(dados.keys()), 'values': list(dados.values())})
