@@ -1,17 +1,31 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Conta, Categoria
+from extrato.models import Valores
 from django.contrib import messages
 from django.contrib.messages import constants
+from django.db.models import Sum
+from datetime import datetime
+from .utils import calcula_total
 
 
 # Create your views here.
 def home(request):
+    valores = Valores.objects.filter(data__month=datetime.now().month)
+    entradas = valores.filter(tipo='E')
+    saidas = valores.filter(tipo='S')
+
+    total_entradas = calcula_total(entradas, 'valor')
+    total_saidas = calcula_total(saidas, 'valor')
+
     contas = Conta.objects.all()
     total_contas = 0
     for conta in contas:
         total_contas += conta.valor
-    return render(request, 'home.html', {'contas': contas, 'total_contas': total_contas})
+    return render(request, 'home.html', {'contas': contas, 
+                                         'total_contas': total_contas,
+                                         'total_entradas':total_entradas,
+                                         'total_saidas':total_saidas})
 
 def gerenciar(request):
     contas = Conta.objects.all()
@@ -78,6 +92,9 @@ def dashboard(request):
     categorias = Categoria.objects.all()
 
     for categoria in categorias:
-        dados[categoria.categoria] = Valores.objects.filter(categoria=categoria).aggregate(Sum('valor'))['valor__sum']
-
+        total = 0
+        valores = Valores.objects.filter(categoria=categoria)
+        for v in valores:
+            total = total + v.valor
+        dados[categoria.categoria] = total
     return render(request, 'dashboard.html', {'labels': list(dados.keys()), 'values': list(dados.values())})

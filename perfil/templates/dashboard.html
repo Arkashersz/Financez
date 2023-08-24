@@ -5,7 +5,6 @@
     <link href="{% static 'perfil/css/home.css' %}" rel="stylesheet">
     <link href="{% static 'perfil/css/gerenciar.css' %}" rel="stylesheet">
     <link href="{% static 'contas/css/contas.css' %}" rel="stylesheet">
-    <script type="text/javascript" src="{% static 'dashboard/js/dashboard.js' %}"></script>
 
 {% endblock %}
 
@@ -37,5 +36,19 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    <script>
+        const ctx = document.getElementById('myChart');
+    
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{labels|safe}},
+                datasets: [{
+                    label: 'Gastos por categoria',
+                    data: {{values}},
+                }]
+            },    
+        });
+    </script>
 
 {% endblock %}
