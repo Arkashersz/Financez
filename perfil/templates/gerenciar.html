@@ -53,17 +53,22 @@
       >
         {% csrf_token %}
         <label>Apelido</label>
-        <input type="text" name="apelido" class="form-control" placeholder="" />
+        <input type="text" name="apelido" class="form-control" placeholder="Qual o nome da sua conta?" />
         <br />
         <label>Banco</label>
-        <select name="banco" class="form-select">
-          <option value="NU">Nubank</option>
-        </select>
-        <br />
+          <select name="banco" class="form-select">
+            {% for choice in banco_choices %}
+              <option value="{{choice.0}}">{{choice.1}}</option>
+            {% endfor %}
+          </select>
+          <br />
+
+
         <label>Tipo</label>
         <select name="tipo" class="form-select">
-          <option value="pf">Pessoa física</option>
-          <option value="pj">Pessoa jurídica</option>
+          {% for choice in tipo_choices %}
+            <option value="{{choice.0}}">{{choice.1}}</option>
+          {% endfor %}
         </select>
         <br />
         <label>Valor</label>

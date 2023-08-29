@@ -38,7 +38,9 @@ def gerenciar(request):
     total_contas = 0
     for conta in contas:
         total_contas += conta.valor
-    return render(request, 'gerenciar.html', {'contas': contas, 'total_contas': total_contas, 'categorias': categorias})
+    banco_choices = Conta.banco_choices  # Recupere as opções de banco
+    tipo_choices = conta.tipo_choices
+    return render(request, 'gerenciar.html', {'contas': contas, 'total_contas': total_contas, 'categorias': categorias, 'banco_choices': banco_choices, 'tipo_choices': tipo_choices})
 
 def cadastrar_banco(request):
     apelido = request.POST.get('apelido')
