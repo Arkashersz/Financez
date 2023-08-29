@@ -14,7 +14,8 @@ def definir_planejamento(request):
 
 @csrf_exempt
 def update_valor_categoria(request, id):
-    novo_valor = json.load(request)['novo_valor']
+    data = json.loads(request.body.decode('utf-8'))
+    novo_valor = data['novo_valor']
     categoria = Categoria.objects.get(id=id)
     categoria.valor_planejamento = novo_valor
     categoria.save()

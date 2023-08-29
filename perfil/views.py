@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.contrib.messages import constants
 from django.db.models import Sum
 from datetime import datetime
-from .utils import calcula_total
+from .utils import calcula_total, calcula_equilibrio_financeiro
 
 
 # Create your views here.
@@ -22,10 +22,15 @@ def home(request):
     total_contas = 0
     for conta in contas:
         total_contas += conta.valor
+
+    percentual_gastos_essenciais, percentual_gastos_nao_essenciais = calcula_equilibrio_financeiro()
+    
     return render(request, 'home.html', {'contas': contas, 
                                          'total_contas': total_contas,
                                          'total_entradas':total_entradas,
-                                         'total_saidas':total_saidas})
+                                         'total_saidas':total_saidas,
+                                         'percentual_gastos_essenciais': int(percentual_gastos_essenciais),
+                                         'percentual_gastos_nao_essenciais': int(percentual_gastos_nao_essenciais)})
 
 def gerenciar(request):
     contas = Conta.objects.all()
