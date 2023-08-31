@@ -87,3 +87,6 @@ def exportar_pdf(request):
     
 
     return FileResponse(path_output, filename="extrato.pdf")
+
+def teste (request):
+    
